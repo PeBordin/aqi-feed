@@ -1,0 +1,23 @@
+name: Take Screenshot
+on:
+  schedule:
+    - cron: '*/15 * * * *' # รันทุก 15 นาที
+  workflow_dispatch: # ยอมให้เรากดรันเองได้
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with: { node-version: '16' }
+      - run: npm install puppeteer
+      - run: node capture.js
+      - name: Update Files
+        run: |
+          git config --global user.name "AQI-Bot"
+          git config --global user.email "bot@github.com"
+          sed -i "s/v=[0-9]*/v=${{ github.run_number }}/g" feed.xml
+          sed -i "s/snap-[0-9]*/snap-${{ github.run_number }}/g" feed.xml
+          git add aqi-snap.jpg feed.xml
+          git commit -m "Refresh Snapshot" || exit 0
+          git push
