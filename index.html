@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AQI Signage - Thermometer Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-box-sizing: border-box; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #F3F3F3; overflow: hidden; position: relative; }
+        
+        /* แถบสีพื้นหลังด้านล่าง */
+        #bottom-bar { 
+            width: 100%; height: 65%; position: absolute; top: 35%; left: 0; 
+            background: #95a5a6; -webkit-transition: background 1s; transition: background 1s; z-index: 1;
+        }
+
+        .screen-container { width: 100%; height: 100%; position: relative; z-index: 10; }
+
+        /* หัวข้อด้านบน */
+        .header-text { 
+            position: absolute; width: 100%; top: 3vh; text-align: center;
+            color: black; font-size: 13vh; font-weight: 700;
+        }
+
+        /* กรอบขาวหลัก */
+        .main-card { 
+            width: 86%; height: 42vh; left: 7%; top: 27vh; 
+            position: absolute; background: white; border-radius: 47px; z-index: 20;
+            -webkit-box-shadow: 0px 4px 100px rgba(0, 0, 0, 0.25);
+            display: -webkit-flex; display: flex; 
+            -webkit-align-items: center; align-items: center;
+        }
+
+        /* ฝั่งซ้าย: AQI (กว้างกว่า 65%) */
+        .aqi-section { 
+            -webkit-flex: 2; flex: 2;
+            display: -webkit-flex; display: flex; 
+            -webkit-justify-content: center; justify-content: center; 
+            -webkit-align-items: center; align-items: center;
+            padding-left: 2vh;
+        }
+        #status-icon { 
+            width: 24vh; height: 24vh; 
+            margin-right: 5vh; /* ระยะห่าง icon กับตัวเลข */
+            -webkit-animation: floating 1.5s ease-in-out infinite; 
+        }
+        #aqi-value { font-size: 30vh; font-weight: 700; color: #95a5a6; line-height: 1; }
+        .aqi-label { font-size: 3.5vh; font-weight: 700; color: #95a5a6; margin-top: -1vh; text-align: center; }
+
+        /* เส้นคั่นกลาง */
+        .divider { width: 5px; height: 30vh; background: #95a5a6; opacity: 0.5; }
+
+        /* ฝั่งขวา: อุณหภูมิ (พื้นที่น้อยกว่า) */
+        .temp-section { 
+            -webkit-flex: 1; flex: 1;
+            display: -webkit-flex; display: flex; 
+            -webkit-justify-content: center; justify-content: center; 
+            -webkit-align-items: center; align-items: center;
+        }
+        #weather-icon-box { 
+            width: 8vh; height: 20vh; margin-right: 5vh; 
+            display: block; overflow: visible;
+        }
+        #temp-value { font-size: 12vh; font-weight: 700; color: #95a5a6; }
+
+        /* สถานะอากาศตัวใหญ่ (13vh) */
+        #status-text-large { 
+            position: absolute; width: 100%; top: 68vh; text-align: center;
+            color: white; font-size: 15vh; font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Footer ด้านล่างสุด */
+        .footer-info { 
+            position: absolute; width: 100%; bottom: 5vh; text-align: center;
+            color: white; font-size: 3.5vh; font-weight: 400;
+        }
+
+        @-webkit-keyframes floating { 0% { -webkit-transform: translateY(0px); } 50% { -webkit-transform: translateY(-20px); } 100% { -webkit-transform: translateY(0px); } }
+    </style>
+</head>
+<body>
+
+    <div id="bottom-bar"></div>
+
+    <div class="screen-container">
+        <div class="header-text">คุณภาพอากาศวันนี้</div>
+        
+        <div class="main-card">
+            <div class="aqi-section">
+                <div id="status-icon"></div>
+                <div>
+                    <div id="aqi-value">--</div>
+                    <div class="aqi-label">US-AQI</div>
+                </div>
+            </div>
+            
+            <div id="mid-line" class="divider"></div>
+            
+            <div class="temp-section">
+                <div id="weather-icon-box"></div>
+                <div id="temp-value">--°C</div>
+            </div>
+        </div>
+
+        <div id="status-text-large">กำลังเชื่อมต่อ...</div>
+        
+        <div class="footer-info">
+            <span id="station-name">Chiang Mai University Area</span> | <span id="current-time">00:00:00</span>
+        </div>
+    </div>
+
+    <script>
+        var TOKEN = '7b1855999d1e30206e4beffd05616884b1f3e716';
+        var STATIONS = ['chiangmai', '@99489', '@99490', '@99491', '@403297'];
+
+        // ฟังก์ชันวาดรูปปรอท (Thermometer) แบบคงที่ โดยรับค่าสีมาเปลี่ยนตาม AQI
+        function getThermometerIcon(color) {
+            return '<svg viewBox="0 0 100 100" style="width:100%; height:100%; overflow:visible;">' +
+                   '<path d="M50 20 A10 10 0 0 1 60 30 V70 A20 20 0 1 1 40 70 V30 A10 10 0 0 1 50 20 Z" fill="none" stroke="' + color + '" stroke-width="6"/>' +
+                   '<circle cx="50" cy="80" r="8" fill="' + color + '"/>' +
+                   '<rect x="47" y="40" width="6" height="35" rx="3" fill="' + color + '"/>' +
+                   '</svg>';
+        }
+
+        function getAqiIcon(color, type) {
+            var mouth = (type === 'happy') ? "M30 70 Q50 85 70 70" : "M30 80 Q50 65 70 80";
+            return '<svg viewBox="0 0 100 100" style="width:100%; height:100%;"><circle cx="50" cy="50" r="48" fill="' + color + '" /><circle cx="33" cy="40" r="6" fill="white" /><circle cx="67" cy="40" r="6" fill="white" /><path d="' + mouth + '" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" /></svg>';
+        }
+
+        function updateClock() {
+            var now = new Date();
+            var h = now.getHours(); var m = now.getMinutes(); var s = now.getSeconds();
+            document.getElementById('current-time').innerText = (h<10?'0':'')+h+":"+(m<10?'0':'')+m+":"+(s<10?'0':'')+s;
+        }
+
+        function fetchAirData() {
+            var sumAqi = 0, sumT = 0, countA = 0, countT = 0, fin = 0;
+            for (var i = 0; i < STATIONS.length; i++) {
+                (function(id) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', 'https://api.waqi.info/feed/' + id + '/?token=' + TOKEN + '&nocache=' + new Date().getTime(), true);
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            fin++;
+                            if (xhr.status === 200) {
+                                try {
+                                    var r = JSON.parse(xhr.responseText);
+                                    if (r.status === 'ok' && r.data) {
+                                        if (r.data.aqi > 0) { sumAqi += r.data.aqi; countA++; }
+                                        if (r.data.iaqi.t) { sumT += r.data.iaqi.t.v; countT++; }
+                                    }
+                                } catch(e) {}
+                            }
+                            if (fin === STATIONS.length) {
+                                renderUI(countA > 0 ? Math.round(sumAqi/countA) : 0, countT > 0 ? Math.round(sumT/countT) : 0);
+                            }
+                        }
+                    };
+                    xhr.send();
+                })(STATIONS[i]);
+            }
+        }
+
+        function renderUI(aqi, temp) {
+            if (aqi === 0) return;
+            var color = "#7f8c8d", text = "อันตราย!", type = 'sad';
+            if (aqi <= 50) { color = "#2ecc71"; text = "คุณภาพอากาศดี"; type = 'happy'; }
+            else if (aqi <= 100) { color = "#f1c40f"; text = "อากาศปานกลาง"; type = 'happy'; }
+            else if (aqi <= 150) { color = "#EA7D1F"; text = "เริ่มมีผลต่อสุขภาพ"; type = 'sad'; }
+            else if (aqi <= 200) { color = "#e74c3c"; text = "มีผลต่อสุขภาพ"; type = 'sad'; }
+            else if (aqi <= 300) { color = "#9b59b6"; text = "มีผลต่อสุขภาพมาก"; type = 'sad'; }
+
+            document.getElementById('aqi-value').innerText = aqi;
+            document.getElementById('aqi-value').style.color = color;
+            document.getElementById('temp-value').innerText = Math.round(temp) + "°C";
+            document.getElementById('temp-value').style.color = color;
+            document.getElementById('mid-line').style.background = color;
+            document.getElementById('bottom-bar').style.background = color;
+            document.getElementById('status-text-large').innerText = text;
+            document.getElementById('status-icon').innerHTML = getAqiIcon(color, type);
+            
+            // ใช้ไอคอนปรอทที่มีสีตามสถานะ AQI
+            document.getElementById('weather-icon-box').innerHTML = getThermometerIcon(color);
+            
+            var label = document.querySelector('.aqi-label');
+            if(label) label.style.color = color;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+        fetchAirData();
+        setInterval(fetchAirData, 300000);
+    </script>
+</body>
+</html>
