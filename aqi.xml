@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>คุณภาพอากาศ เชียงใหม่</title>
+    <description>AQI + อุณหภูมิ + พยากรณ์ 1 วัน</description>
+    <link>https://github.com</link>
+
+    <item>
+      <title>ค่าฝุ่นวันนี้: AQI 50 (ปานกลาง)</title>
+      <description>
+        PM2.5: 25 µg/m³ | อุณหภูมิ: 30°C | พรุ่งนี้: 32°C มีแดด
+      </description>
+      <pubDate>Wed, 18 Mar 2026 10:00:00 GMT</pubDate>
+    </item>
+
+  </channel>
+</rss>
