@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>CMU AQI Real-time Feed</title>
-    <link>https://YOUR_USER.github.io/YOUR_REPO/</link>
-    <description>รายงานคุณภาพอากาศ มช. แบบ Real-time สำหรับ Digital Signage</description>
+    <title>CMU AQI Dashboard Feed</title>
+    <link>https://YOUR_USER.github.io/YOUR_REPO/index.html</link>
+    <description>Real-time Air Quality Monitoring for CMU</description>
     <language>th-th</language>
-    <lastBuildDate>Wed, 18 Mar 2026 11:20:00 +0700</lastBuildDate>
 
     <item>
-      <title>AQI Dashboard CMU</title>
+      <title>AQI Dashboard Real-time</title>
       <link>https://YOUR_USER.github.io/YOUR_REPO/index.html</link>
-      <guid isPermaLink="true">https://YOUR_USER.github.io/YOUR_REPO/index.html</guid>
-      <description>คุณภาพอากาศและอุณหภูมิปัจจุบัน</description>
+      <description>รายงานค่าฝุ่นและอุณหภูมิ มช.</description>
       
       <media:content 
         url="https://YOUR_USER.github.io/YOUR_REPO/index.html" 
@@ -20,6 +18,8 @@
         duration="300">
         <media:title>AQI Dashboard</media:title>
       </media:content>
+      
+      <guid isPermaLink="false">aqi-dashboard-v1</guid>
     </item>
   </channel>
 </rss>
