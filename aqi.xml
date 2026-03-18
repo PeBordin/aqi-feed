@@ -1,17 +1,122 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-  <channel>
-    <title>คุณภาพอากาศ เชียงใหม่</title>
-    <description>AQI + อุณหภูมิ + พยากรณ์ 1 วัน</description>
-    <link>https://github.com</link>
+import requests
+from datetime import datetime
+import urllib.parse
 
-    <item>
-      <title>ค่าฝุ่นวันนี้: AQI 50 (ปานกลาง)</title>
-      <description>
-        PM2.5: 25 µg/m³ | อุณหภูมิ: 30°C | พรุ่งนี้: 32°C มีแดด
-      </description>
-      <pubDate>Wed, 18 Mar 2026 10:00:00 GMT</pubDate>
-    </item>
+# ===== API =====
+aqi_url = "https://api.waqi.info/feed/chiangmai/?token=demo"
+weather_url = "https://api.open-meteo.com/v1/forecast?latitude=18.79&longitude=98.98&daily=temperature_2m_max&current_weather=true&timezone=Asia%2FBangkok"
 
-  </channel>
+aqi_data = requests.get(aqi_url).json()["data"]
+weather_data = requests.get(weather_url).json()
+
+aqi = aqi_data["aqi"]
+pm25 = aqi_data["iaqi"]["pm25"]["v"]
+temp = weather_data["current_weather"]["temperature"]
+forecast = weather_data["daily"]["temperature_2m_max"][1]
+
+# ===== THEME (Apple style) =====
+def get_theme(aqi):
+    if aqi <= 50:
+        return ("ดี", "#34C759", "😊")
+    elif aqi <= 100:
+        return ("ปานกลาง", "#FFCC00", "😐")
+    elif aqi <= 150:
+        return ("เริ่มมีผลกระทบ", "#FF9500", "😷")
+    elif aqi <= 200:
+        return ("มีผลกระทบ", "#FF3B30", "🤒")
+    else:
+        return ("อันตราย", "#AF52DE", "☠️")
+
+status, color, emoji = get_theme(aqi)
+
+# ===== SVG (iOS Widget Style + Animation) =====
+svg = f"""
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{color}"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+
+    <!-- glow animation -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="15" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="100%" height="100%" fill="url(#bg)" rx="60"/>
+
+  <!-- center group -->
+  <g text-anchor="middle" transform="translate(960,540)">
+
+    <!-- pulse circle -->
+    <circle r="200" fill="{color}" opacity="0.2">
+      <animate attributeName="r" values="180;220;180" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.05;0.2" dur="2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- AQI -->
+    <text y="-50" font-size="140" fill="white" font-family="Arial" filter="url(#glow)">
+      {aqi}
+    </text>
+
+    <!-- status -->
+    <text y="40" font-size="60" fill="white">
+      {status} {emoji}
+    </text>
+
+    <!-- PM2.5 -->
+    <text y="120" font-size="40" fill="white" opacity="0.85">
+      PM2.5 {pm25} µg/m³
+    </text>
+
+    <!-- temp -->
+    <text y="200" font-size="50" fill="white">
+      🌡️ {temp}°C
+    </text>
+
+    <!-- forecast -->
+    <text y="260" font-size="40" fill="white" opacity="0.85">
+      🔮 พรุ่งนี้ {forecast}°C
+    </text>
+
+  </g>
+
+</svg>
+"""
+
+svg_url = "data:image/svg+xml;utf8," + urllib.parse.quote(svg)
+
+# ===== RSS =====
+now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+
+<channel>
+<title>Air Quality Dashboard</title>
+
+<item>
+<title>AQI {aqi} | {status}</title>
+
+<description>
+PM2.5 {pm25} | Temp {temp}°C
+</description>
+
+<media:content url="{svg_url}" type="image/svg+xml"/>
+
+<pubDate>{now}</pubDate>
+</item>
+
+</channel>
 </rss>
+"""
+
+with open("aqi.xml", "w", encoding="utf-8") as f:
+    f.write(xml)
