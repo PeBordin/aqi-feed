@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
-    <title>CMU AQI Dashboard Feed</title>
-    <link>https://YOUR_USER.github.io/YOUR_REPO/index.html</link>
-    <description>Real-time Air Quality Monitoring for CMU</description>
+    <title>CMU AQI Photo Feed</title>
+    <link>https://https://pebordin.github.io/aqi-feed/index.html</link>
+    <description>Real-time AQI Screenshot for CMU Digital Signage</description>
     <language>th-th</language>
 
     <item>
-      <title>AQI Dashboard Real-time</title>
-      <link>https://YOUR_USER.github.io/YOUR_REPO/index.html</link>
-      <description>รายงานค่าฝุ่นและอุณหภูมิ มช.</description>
+      <title>AQI Current Status</title>
+      <link>https://https://pebordin.github.io/aqi-feed/aqi-snap.jpg</link>
+      <description>รูปภาพรายงานคุณภาพอากาศล่าสุด</description>
       
       <media:content 
-        url="https://pebordin.github.io/aqi-feed//index.html" 
-        medium="document" 
-        type="text/html" 
+        url="https://pebordin.github.io/aqi-feed/aqi-snap.jpg?v=0" 
+        medium="image" 
+        type="image/jpeg" 
         duration="300">
-        <media:title>AQI Dashboard</media:title>
+        <media:title>AQI Snapshot</media:title>
       </media:content>
       
-      <guid isPermaLink="false">aqi-dashboard-v1</guid>
+      <guid isPermaLink="false">aqi-snap-0</guid>
     </item>
   </channel>
 </rss>
