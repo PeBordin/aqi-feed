@@ -12,7 +12,7 @@
       <description>รายงานค่าฝุ่นและอุณหภูมิ มช.</description>
       
       <media:content 
-        url="https://YOUR_USER.github.io/YOUR_REPO/index.html" 
+        url="https://pebordin.github.io/aqi-feed//index.html" 
         medium="document" 
         type="text/html" 
         duration="300">
