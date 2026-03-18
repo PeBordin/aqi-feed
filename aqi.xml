@@ -1,31 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"
- xmlns:media="http://search.yahoo.com/mrss/">
+<rss version="2.0">
 
 <channel>
-  <title>Chiang Mai Air Quality</title>
-  <link>https://example.com</link>
-  <description>PM2.5 + Temperature Dashboard</description>
+  <title>Chiang Mai AQI</title>
 
   <item>
-    <title>🌫️ AQI 85 | ปานกลาง</title>
-
+    <title>AQI 85 | ปานกลาง</title>
     <description>
 PM2.5: 40 µg/m³
-
-🌡️ อุณหภูมิ: 30°C
-🔮 พรุ่งนี้: 34°C
+Temp: 30°C
+Forecast: 34°C
     </description>
-
-    <!-- ใช้ภาพออนไลน์ -->
-    <media:content 
-      url="https://images.unsplash.com/photo-1502082553048-f009c37129b9"
-      type="image/jpeg" />
-
-    <media:thumbnail 
-      url="https://cdn-icons-png.flaticon.com/512/414/414927.png" />
-
-    <pubDate>Wed, 18 Mar 2026 07:00:00 GMT</pubDate>
   </item>
 
 </channel>
