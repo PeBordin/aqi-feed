@@ -12,14 +12,14 @@
       <description>รูปภาพรายงานคุณภาพอากาศล่าสุด</description>
       
       <media:content 
-        url="https://pebordin.github.io/aqi-feed/aqi-snap.jpg?v=77" 
+        url="https://pebordin.github.io/aqi-feed/aqi-snap.jpg?v=78" 
         medium="image" 
         type="image/jpeg" 
         duration="300">
         <media:title>AQI Snapshot</media:title>
       </media:content>
       
-      <guid isPermaLink="false">aqi-snap-77</guid>
+      <guid isPermaLink="false">aqi-snap-78</guid>
     </item>
   </channel>
 </rss>
